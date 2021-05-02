@@ -31,7 +31,7 @@ const CallPage = () => {
     data.call.direction === "inbound" ? data.call.from : data.call.to;
 
   return (
-    <Flex paddingTop={4} flexDirection="column">
+    <Flex paddingTop={8} flexDirection="column">
       <Tag variant="grey" margin="auto" marginBottom={6}>
         <CalendarOutlined size={16} />
         <Typography>
@@ -72,16 +72,18 @@ const CallPage = () => {
         </Typography>
       </Spacer>
 
-      <Spacer direction="vertical" width="100%" padding="0 16px">
+      <Spacer direction="vertical" width="100%" paddingX={4}>
         <Typography variant="displayS" marginBottom={3}>
           Notes
         </Typography>
 
-        {data.call.notes.map((note) => (
-          <Box padding="16px" boxShadow={1} borderRadius={4}>
-            <Typography key={note.id}>{note.content}</Typography>
-          </Box>
-        ))}
+        <Spacer space="s" direction="vertical" width="100%">
+          {data.call.notes.map((note) => (
+            <Box padding="16px" boxShadow={1} borderRadius={4}>
+              <Typography key={note.id}>{note.content}</Typography>
+            </Box>
+          ))}
+        </Spacer>
       </Spacer>
     </Flex>
   );

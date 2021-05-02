@@ -20,7 +20,6 @@ const Routes = () => {
   return (
     <>
       <Box
-        marginTop="50px"
         marginBottom="75px"
         marginX="auto"
         maxWidth="600px"

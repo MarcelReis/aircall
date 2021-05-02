@@ -1,13 +1,70 @@
 import React, { useMemo, useState } from "react";
-import { Box, Button, Spacer, Typography } from "@aircall/tractor";
 
 import { useCallListQuery } from "../generated/graphql";
 import dayjs from "dayjs";
 import CallGroup from "../components/CallGroup";
+import {
+  ArchiveFilled,
+  Box,
+  Button,
+  Dropdown,
+  CloseOutlined,
+  DropdownButton,
+  Flex,
+  Menu,
+  MenuItem,
+  PreferencesOutlined,
+  Spacer,
+  Typography,
+} from "@aircall/tractor";
 
 const LIMIT = 10;
 
 const HomePage = () => {
+  const [filters, setFilters] = useState<{
+    type: string[];
+    direction: string[];
+    archived: boolean;
+  }>({
+    type: [],
+    direction: [],
+    archived: false,
+  });
+
+  const toggleFilter = (toggledFilter: Record<string, string>) => {
+    setFilters((filters) => {
+      const newFilters = { ...filters };
+
+      if (toggledFilter.type) {
+        newFilters.type = [...newFilters.type];
+
+        newFilters.type.includes(toggledFilter.type)
+          ? newFilters.type.splice(
+              newFilters.type.indexOf(toggledFilter.type),
+              1
+            )
+          : newFilters.type.push(toggledFilter.type);
+      }
+
+      if (toggledFilter.direction) {
+        newFilters.direction = [...newFilters.direction];
+
+        newFilters.direction.includes(toggledFilter.direction)
+          ? newFilters.direction.splice(
+              newFilters.direction.indexOf(toggledFilter.direction),
+              1
+            )
+          : filters.direction.push(toggledFilter.direction);
+      }
+
+      if (toggledFilter.archived) {
+        newFilters.archived = !newFilters.archived;
+      }
+
+      return newFilters;
+    });
+  };
+
   const [pagination, setPagination] = useState({
     page: 1,
     loading: false,
@@ -37,12 +94,25 @@ const HomePage = () => {
     });
   };
 
-  const groupedCalls = useMemo(() => {
-    if (!data?.paginatedCalls.nodes?.length) {
+  const filteredCalls = useMemo(() => {
+    if (!data?.paginatedCalls.nodes) {
       return [];
     }
 
-    const calls = [...data.paginatedCalls.nodes];
+    return data.paginatedCalls.nodes.filter((call) => {
+      const hasType =
+        !filters.type.length || filters.type.includes(call.call_type);
+
+      const hasDirection =
+        !filters.direction.length || filters.direction.includes(call.direction);
+
+      return hasType && hasDirection && filters.archived === call.is_archived;
+    });
+  }, [data, filters]);
+
+  const groupedCalls = useMemo(() => {
+    const calls = filteredCalls;
+
     calls.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
 
     return calls.reduce((groupedCalls: any, call) => {
@@ -61,7 +131,7 @@ const HomePage = () => {
 
       return groupedCalls;
     }, []);
-  }, [data]);
+  }, [filteredCalls]);
 
   if (error) {
     return <div>Error</div>;
@@ -72,7 +142,63 @@ const HomePage = () => {
   }
 
   return (
-    <Spacer space="s" direction="vertical" width="100%">
+    <Spacer space="s" direction="vertical" width="100%" paddingTop={8}>
+      <Flex
+        position="fixed"
+        top={0}
+        left={0}
+        width="100%"
+        height="72px"
+        justifyContent="center"
+        alignItems="center"
+        paddingX={4}
+        boxShadow={1}
+        zIndex={10}
+        backgroundColor="#fff"
+      >
+        <Box marginLeft="auto">
+          <Dropdown
+            trigger={
+              <DropdownButton
+                mode="link"
+                variant="primary"
+                iconClose={<PreferencesOutlined />}
+              >
+                Filters
+              </DropdownButton>
+            }
+            position="bottom"
+            anchor="end"
+          >
+            <Menu>
+              <MenuItem onClick={() => toggleFilter({ type: "voicemail" })}>
+                {filters.type.includes("voicemail") ? "✔ " : null}Voicemail
+              </MenuItem>
+              <MenuItem onClick={() => toggleFilter({ type: "answered" })}>
+                {filters.type.includes("answered") ? "✔ " : null}Answered
+              </MenuItem>
+              <MenuItem onClick={() => toggleFilter({ type: "missed" })}>
+                {filters.type.includes("missed") ? "✔ " : null}Missed
+              </MenuItem>
+
+              <Box
+                width="100%"
+                borderWidth={2}
+                borderStyle="solid"
+                borderColor="grey.lighter"
+              />
+
+              <MenuItem onClick={() => toggleFilter({ direction: "inbound" })}>
+                {filters.direction.includes("inbound") ? "✔ " : null}Inbound
+              </MenuItem>
+              <MenuItem onClick={() => toggleFilter({ direction: "outbound" })}>
+                {filters.direction.includes("outbound") ? "✔ " : null}Outbound
+              </MenuItem>
+            </Menu>
+          </Dropdown>
+        </Box>
+      </Flex>
+
       <Box marginTop={4} paddingX={4}>
         <Typography variant="displayL">Call History</Typography>
       </Box>
@@ -87,11 +213,29 @@ const HomePage = () => {
         ))}
       </Spacer>
 
-      {data.paginatedCalls.hasNextPage ? (
-        <Button type="button" onClick={loadMore} disabled={pagination.loading}>
-          Load more
+      <Flex justifyContent="center" marginBottom={4}>
+        {data.paginatedCalls.hasNextPage ? (
+          <Button
+            type="button"
+            size="small"
+            onClick={loadMore}
+            disabled={pagination.loading}
+          >
+            Load more
+          </Button>
+        ) : null}
+      </Flex>
+
+      <Flex justifyContent="center" marginBottom={4}>
+        <Button
+          type="button"
+          variant="darkGhost"
+          onClick={() => toggleFilter({ archived: "archived" })}
+        >
+          {filters.archived ? <CloseOutlined /> : <ArchiveFilled />}
+          Archived
         </Button>
-      ) : null}
+      </Flex>
     </Spacer>
   );
 };
