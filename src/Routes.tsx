@@ -20,7 +20,7 @@ const Routes = () => {
   return (
     <>
       <Topbar />
-      <Box paddingTop="50px">
+      <Box paddingTop="50px" marginBottom="75px" margin="auto" maxWidth="600px">
         <Switch>
           <Route exact path="/">
             <HomePage />

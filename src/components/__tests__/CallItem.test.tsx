@@ -3,17 +3,20 @@ import CallItem from "../CallItem";
 import { ComponentProps } from "react";
 
 const defaultProps: ComponentProps<typeof CallItem> = {
-  number: "+33141645422",
+  call_type: "voicemail",
+  created_at: "2021-04-30T11:31:14.567Z",
   direction: "inbound",
-  callType: "voicemail",
-  createdAt: "2021-04-27T09:43:27.659Z",
+  from: "+33141645422",
+  id: "c59fe15f-5ad0-4bc9-9242-50dc74c1b585",
+  is_archived: true,
+  to: "+33147037033",
 };
 
 describe("<CallItem/>", function () {
   it("should render the call information", function () {
     render(<CallItem {...defaultProps} />);
 
-    screen.getByText(defaultProps.callType);
+    screen.getByText(defaultProps.call_type);
     screen.getByText("+33 1 41 64 54 22");
   });
 });

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Button, Spacer, Typography } from "@aircall/tractor";
+import React, { useMemo, useState } from "react";
+import { Box, Button, Spacer, Typography } from "@aircall/tractor";
 
 import { useCallListQuery } from "../generated/graphql";
-import CallItem from "../components/CallItem";
+import dayjs from "dayjs";
+import CallGroup from "../components/CallGroup";
 
 const LIMIT = 10;
 
@@ -27,6 +28,7 @@ const HomePage = () => {
             page: pagination.page + 1,
           }))
         )
+        .catch(console.log)
         .finally(() =>
           setPagination((pagination) => ({ ...pagination, loading: false }))
         );
@@ -34,6 +36,32 @@ const HomePage = () => {
       return { ...pagination, loading: true };
     });
   };
+
+  const groupedCalls = useMemo(() => {
+    if (!data?.paginatedCalls.nodes?.length) {
+      return [];
+    }
+
+    const calls = [...data.paginatedCalls.nodes];
+    calls.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
+
+    return calls.reduce((groupedCalls: any, call) => {
+      const header = dayjs(call.created_at).format("MMMM, D YYYY");
+
+      const previous = groupedCalls[groupedCalls.length - 1];
+      if (previous && previous.header === header) {
+        previous.calls.push(call);
+        return groupedCalls;
+      }
+
+      groupedCalls.push({
+        header: dayjs(call.created_at).format("MMMM, D YYYY"),
+        calls: [call],
+      });
+
+      return groupedCalls;
+    }, []);
+  }, [data]);
 
   if (error) {
     return <div>Error</div>;
@@ -45,16 +73,18 @@ const HomePage = () => {
 
   return (
     <Spacer space="s" direction="vertical" width="100%">
-      <Typography variant="displayXL">AirCall</Typography>
+      <Box marginTop={4}>
+        <Typography textAlign="center" variant="displayL">
+          Call History
+        </Typography>
+      </Box>
 
-      <Spacer space="s" direction="vertical" width="100%" padding="0 16px">
-        {data.paginatedCalls.nodes?.map((node) => (
-          <CallItem
-            key={node.id}
-            number={node.call_type === "inbound" ? node.from : node.to}
-            direction={node.direction}
-            callType={node.call_type}
-            createdAt={node.created_at}
+      <Spacer space="xl" width="100%" direction="vertical">
+        {groupedCalls.map((group: any) => (
+          <CallGroup
+            key={group.header}
+            header={group.header}
+            calls={group.calls}
           />
         ))}
       </Spacer>
