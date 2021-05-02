@@ -1,6 +1,8 @@
 import { createHttpLink } from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
-import { authVar } from "./auth";
+import { LoginMutation } from "../generated/graphql";
+import { logout } from "./auth";
 
 const httpLink = createHttpLink({
   uri: "https://frontend-test-api.aircall.io/graphql",
@@ -8,14 +10,26 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = authVar();
+  const auth = JSON.parse(localStorage.getItem("login")!) as
+    | LoginMutation["login"]
+    | null;
 
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token.access_token}` : "",
+      authorization: auth ? `Bearer ${auth.access_token}` : "",
     },
   };
 });
 
-export const link = authLink.concat(httpLink);
+const errorLink = onError(({ graphQLErrors }) => {
+  const isTokenExpired =
+    graphQLErrors &&
+    graphQLErrors.some((error) => error.message === "Unauthorized");
+
+  if (isTokenExpired) {
+    logout();
+  }
+});
+
+export const link = authLink.concat(errorLink).concat(httpLink);

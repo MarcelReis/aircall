@@ -6,7 +6,9 @@ import { queries, Queries } from "@testing-library/dom";
 import MockedProvider from "./apollo/mocked-provider";
 
 const AllTheProviders = ({ children }: any) => {
-  return <Tractor injectStyle>{children}</Tractor>;
+  return (
+    <Tractor injectStyle={process.env.NODE_ENV !== "test"}>{children}</Tractor>
+  );
 };
 
 const customRender = <

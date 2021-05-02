@@ -1,0 +1,15 @@
+query CallList($offset: Float!, $limit: Float!) {
+  paginatedCalls(offset: $offset, limit: $limit) {
+    nodes {
+      id
+      direction
+      from
+      to
+      is_archived
+      call_type
+      created_at
+    }
+    totalCount
+    hasNextPage
+  }
+}

@@ -7,9 +7,10 @@ const auth = JSON.parse(localStorage.getItem("login")!) as
 
 export const authVar = makeVar<LoginMutation["login"] | null>(auth);
 
-authVar.onNextChange((auth) => {
-  localStorage.setItem("login", JSON.stringify(auth));
-});
+export const logout = () => {
+  localStorage.removeItem("login");
+  authVar(null);
+};
 
 export const useAuth = () => {
   const [loginMutation, result] = useLoginMutation();
@@ -26,11 +27,9 @@ export const useAuth = () => {
       variables: { input: { username, password } },
     });
 
-    authVar(result.data?.login);
-  };
+    localStorage.setItem("login", JSON.stringify(result.data?.login));
 
-  const logout = () => {
-    authVar(null);
+    setTimeout(() => authVar(result.data?.login));
   };
 
   return {

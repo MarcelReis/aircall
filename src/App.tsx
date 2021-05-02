@@ -1,6 +1,5 @@
 import React from "react";
 import Routes from "./Routes";
-
 import { createClient } from "./apollo/client";
 import { ApolloProvider } from "@apollo/client";
 import { Tractor } from "@aircall/tractor";

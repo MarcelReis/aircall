@@ -8,4 +8,10 @@ const MockedProvider = (props: ComponentProps<typeof Provider>) => {
   return <Provider cache={cache} {...props} />;
 };
 
+export const createMockedProvider = () => {
+  const cache = createCache();
+
+  return (props: any) => <Provider cache={cache} {...props} />;
+};
+
 export default MockedProvider;

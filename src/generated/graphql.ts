@@ -109,6 +109,24 @@ export type UserType = {
   username: Scalars['String'];
 };
 
+export type CallListQueryVariables = Exact<{
+  offset: Scalars['Float'];
+  limit: Scalars['Float'];
+}>;
+
+
+export type CallListQuery = (
+  { __typename?: 'Query' }
+  & { paginatedCalls: (
+    { __typename?: 'PaginatedCalls' }
+    & Pick<PaginatedCalls, 'totalCount' | 'hasNextPage'>
+    & { nodes?: Maybe<Array<(
+      { __typename?: 'Call' }
+      & Pick<Call, 'id' | 'direction' | 'from' | 'to' | 'is_archived' | 'call_type' | 'created_at'>
+    )>> }
+  ) }
+);
+
 export type LoginMutationVariables = Exact<{
   input: LoginInput;
 }>;
@@ -127,6 +145,52 @@ export type LoginMutation = (
 );
 
 
+export const CallListDocument = gql`
+    query CallList($offset: Float!, $limit: Float!) {
+  paginatedCalls(offset: $offset, limit: $limit) {
+    nodes {
+      id
+      direction
+      from
+      to
+      is_archived
+      call_type
+      created_at
+    }
+    totalCount
+    hasNextPage
+  }
+}
+    `;
+
+/**
+ * __useCallListQuery__
+ *
+ * To run a query within a React component, call `useCallListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCallListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCallListQuery({
+ *   variables: {
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useCallListQuery(baseOptions: Apollo.QueryHookOptions<CallListQuery, CallListQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CallListQuery, CallListQueryVariables>(CallListDocument, options);
+      }
+export function useCallListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CallListQuery, CallListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CallListQuery, CallListQueryVariables>(CallListDocument, options);
+        }
+export type CallListQueryHookResult = ReturnType<typeof useCallListQuery>;
+export type CallListLazyQueryHookResult = ReturnType<typeof useCallListLazyQuery>;
+export type CallListQueryResult = Apollo.QueryResult<CallListQuery, CallListQueryVariables>;
 export const LoginDocument = gql`
     mutation Login($input: LoginInput!) {
   login(input: $input) {
