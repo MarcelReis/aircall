@@ -1,11 +1,11 @@
 import React, { ComponentProps } from "react";
-import { MockedProvider } from "@apollo/client/testing";
+import { MockedProvider as Provider } from "@apollo/client/testing";
 import { createCache } from "./cache";
 
-const createMockedProvider = (props: ComponentProps<typeof MockedProvider>) => {
+const MockedProvider = (props: ComponentProps<typeof Provider>) => {
   const cache = createCache();
 
-  return () => <MockedProvider addTypename={false} cache={cache} {...props} />;
+  return <Provider cache={cache} {...props} />;
 };
 
-export default createMockedProvider;
+export default MockedProvider;

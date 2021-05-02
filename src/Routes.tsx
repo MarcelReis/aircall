@@ -6,9 +6,9 @@ import { useAuth } from "./apollo/auth";
 import LoginPage from "./pages/Login";
 
 const Routes = () => {
-  const { isLogged } = useAuth();
+  const { user } = useAuth();
 
-  if (!isLogged) {
+  if (!user) {
     return <LoginPage />;
   }
 

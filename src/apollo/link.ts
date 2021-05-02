@@ -1,5 +1,6 @@
 import { createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { authVar } from "./auth";
 
 const httpLink = createHttpLink({
   uri: "https://frontend-test-api.aircall.io/graphql",
@@ -7,12 +8,12 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem("tokenID");
+  const token = authVar();
 
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : "",
+      authorization: token ? `Bearer ${token.access_token}` : "",
     },
   };
 });
