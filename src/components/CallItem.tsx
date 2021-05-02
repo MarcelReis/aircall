@@ -1,15 +1,9 @@
 import React from "react";
-import {
-  Box,
-  CallInboundFilled,
-  CallOutboundFilled,
-  Flex,
-  Icon,
-  Typography,
-  VoicemailOutlined,
-} from "@aircall/tractor";
+import { useHistory } from "react-router-dom";
+import { Box, Flex, Typography } from "@aircall/tractor";
 import parsePhoneNumber from "libphonenumber-js";
 import dayjs from "dayjs";
+import CallIcon from "./CallIcon";
 
 type CallItemProps = {
   id: string;
@@ -22,19 +16,7 @@ type CallItemProps = {
 };
 
 const CallItem = (props: CallItemProps) => {
-  const IconComponent =
-    props.call_type === "voicemail"
-      ? VoicemailOutlined
-      : props.direction === "inbound"
-      ? CallInboundFilled
-      : CallOutboundFilled;
-
-  const iconColor =
-    props.call_type === "voicemail"
-      ? "grey.dark"
-      : props.call_type === "missed"
-      ? "red.base"
-      : "green.base";
+  const history = useHistory();
 
   return (
     <Flex
@@ -43,14 +25,14 @@ const CallItem = (props: CallItemProps) => {
       width="100%"
       justifyContent="space-between"
       alignItems="center"
+      onClick={() => history.push(`/call/${props.id}`)}
     >
       <Box padding="16px 0 16px 16px">
-        <Icon component={IconComponent} size={32} color={iconColor} />
-        <Typography fontSize="0px" height="0px">
-          {props.call_type === "voicemail"
-            ? props.call_type
-            : `${props.call_type} call`}
-        </Typography>
+        <CallIcon
+          size={32}
+          call_type={props.call_type}
+          direction={props.direction}
+        />
       </Box>
 
       <Box padding="16px 0" margin="auto">

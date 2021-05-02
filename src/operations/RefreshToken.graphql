@@ -1,0 +1,9 @@
+mutation RefreshToken {
+    refreshToken {
+        access_token
+        user {
+            id
+            username
+        }
+    }
+}

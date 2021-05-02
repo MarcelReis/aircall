@@ -10,7 +10,7 @@ type CallGroupProps = {
 const CallGroup = (props: CallGroupProps) => {
   return (
     <Box>
-      <Typography variant="displayS" textAlign="center" marginBottom={2}>
+      <Typography variant="heading" marginBottom={2} paddingX={4}>
         {props.header}
       </Typography>
 

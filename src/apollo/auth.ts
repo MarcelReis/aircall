@@ -28,8 +28,7 @@ export const useAuth = () => {
     });
 
     localStorage.setItem("login", JSON.stringify(result.data?.login));
-
-    setTimeout(() => authVar(result.data?.login));
+    setTimeout(() => authVar(result.data?.login), 100);
   };
 
   return {

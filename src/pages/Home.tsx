@@ -73,10 +73,8 @@ const HomePage = () => {
 
   return (
     <Spacer space="s" direction="vertical" width="100%">
-      <Box marginTop={4}>
-        <Typography textAlign="center" variant="displayL">
-          Call History
-        </Typography>
+      <Box marginTop={4} paddingX={4}>
+        <Typography variant="displayL">Call History</Typography>
       </Box>
 
       <Spacer space="xl" width="100%" direction="vertical">
