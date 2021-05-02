@@ -4,6 +4,7 @@ import userEvents from "@testing-library/user-event";
 import LoginPage from "../Login";
 import { MockedResponse } from "@apollo/client/testing";
 import { LoginDocument, LoginMutation } from "../../generated/graphql";
+import { waitFor } from "@testing-library/react";
 
 const usernameMock = "marcelreis";
 const passwordMock = "123456";
@@ -52,7 +53,9 @@ describe("<LoginPage/>", function () {
 
     userEvents.click(loginButton);
 
-    expect(await screen.findByText(/loading/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    });
   });
 
   it("Should not permit invalid login attempts", async function () {
