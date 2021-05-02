@@ -1,0 +1,68 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}
+
+type AuthResponseType {
+    access_token: String
+    user: UserType
+}
+
+type Call {
+    call_type: String!
+    created_at: String!
+    direction: String!
+    duration: Float!
+    from: String!
+    id: ID!
+    is_archived: Boolean!
+    notes: [Note!]!
+    to: String!
+    via: String!
+}
+
+type Mutation {
+    addNote(input: AddNoteInput!): Call!
+    archiveCall(id: ID!): Call!
+    login(input: LoginInput!): AuthResponseType!
+    refreshToken: AuthResponseType!
+}
+
+type Note {
+    content: String!
+    id: ID!
+}
+
+type PaginatedCalls {
+    hasNextPage: Boolean!
+    nodes: [Call!]
+    totalCount: Int!
+}
+
+type Query {
+    call(id: ID!): Call
+    me: UserType!
+    paginatedCalls(limit: Float = 10.0, offset: Float = 0.0): PaginatedCalls!
+}
+
+type Subscription {
+    onUpdatedCall: Call
+}
+
+type UserType {
+    id: String!
+    username: String!
+}
+
+input AddNoteInput {
+    activityId: ID!
+    content: String!
+}
+
+input LoginInput {
+    password: String!
+    username: String!
+}
