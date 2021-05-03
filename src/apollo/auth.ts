@@ -1,8 +1,14 @@
 import { makeVar, useReactiveVar } from "@apollo/client";
-import { LoginMutation, useLoginMutation } from "../generated/graphql";
+import {
+  AuthResponseType,
+  LoginMutation,
+  RefreshTokenMutation,
+  useLoginMutation,
+} from "../generated/graphql";
 
 const auth = JSON.parse(localStorage.getItem("login")!) as
   | LoginMutation["login"]
+  | RefreshTokenMutation["refreshToken"]
   | null;
 
 export const authVar = makeVar<LoginMutation["login"] | null>(auth);
@@ -10,6 +16,11 @@ export const authVar = makeVar<LoginMutation["login"] | null>(auth);
 export const logout = () => {
   localStorage.removeItem("login");
   authVar(null);
+};
+
+export const setLogin = (login: AuthResponseType) => {
+  localStorage.setItem("login", JSON.stringify(login));
+  authVar(login);
 };
 
 export const useAuth = () => {
@@ -23,15 +34,15 @@ export const useAuth = () => {
     username: string;
     password: string;
   }) => {
-    const result = await loginMutation({
+    const { data } = await loginMutation({
       variables: { input: { username, password } },
     });
 
-    localStorage.setItem("login", JSON.stringify(result.data?.login));
-    setTimeout(() => authVar(result.data?.login), 100);
+    setLogin(data?.login!);
   };
 
   return {
+    token: auth?.access_token,
     user: auth?.user,
     loading: result.loading,
     error: result.error,
