@@ -109,6 +109,23 @@ export type UserType = {
   username: Scalars['String'];
 };
 
+export type AddNoteMutationVariables = Exact<{
+  input: AddNoteInput;
+}>;
+
+
+export type AddNoteMutation = (
+  { __typename?: 'Mutation' }
+  & { addNote: (
+    { __typename?: 'Call' }
+    & Pick<Call, 'id'>
+    & { notes: Array<(
+      { __typename?: 'Note' }
+      & Pick<Note, 'id' | 'content'>
+    )> }
+  ) }
+);
+
 export type ArchiveCallMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -190,6 +207,43 @@ export type RefreshTokenMutation = (
 );
 
 
+export const AddNoteDocument = gql`
+    mutation AddNote($input: AddNoteInput!) {
+  addNote(input: $input) {
+    id
+    notes {
+      id
+      content
+    }
+  }
+}
+    `;
+export type AddNoteMutationFn = Apollo.MutationFunction<AddNoteMutation, AddNoteMutationVariables>;
+
+/**
+ * __useAddNoteMutation__
+ *
+ * To run a mutation, you first call `useAddNoteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddNoteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addNoteMutation, { data, loading, error }] = useAddNoteMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddNoteMutation(baseOptions?: Apollo.MutationHookOptions<AddNoteMutation, AddNoteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddNoteMutation, AddNoteMutationVariables>(AddNoteDocument, options);
+      }
+export type AddNoteMutationHookResult = ReturnType<typeof useAddNoteMutation>;
+export type AddNoteMutationResult = Apollo.MutationResult<AddNoteMutation>;
+export type AddNoteMutationOptions = Apollo.BaseMutationOptions<AddNoteMutation, AddNoteMutationVariables>;
 export const ArchiveCallDocument = gql`
     mutation ArchiveCall($id: ID!) {
   archiveCall(id: $id) {

@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useArchiveCallMutation, useCallInfoQuery } from "../generated/graphql";
+import {
+  useArchiveCallMutation,
+  useAddNoteMutation,
+  useCallInfoQuery,
+} from "../generated/graphql";
 import { parsePhoneNumber } from "libphonenumber-js";
 import {
   Box,
@@ -8,7 +12,9 @@ import {
   Typography,
   CalendarOutlined,
   Tag,
+  Button,
   ArchiveFilled,
+  TextFieldInput,
   ClockOutlined,
   Flex,
   CloseOutlined,
@@ -17,6 +23,7 @@ import {
   Dropdown,
   MenuItem,
   Menu,
+  Form,
 } from "@aircall/tractor";
 import dayjs from "dayjs";
 import CallIcon from "../components/CallIcon";
@@ -24,7 +31,9 @@ import CallIcon from "../components/CallIcon";
 const CallPage = () => {
   const { id } = useParams<{ id: string }>();
   const { loading, error, data } = useCallInfoQuery({ variables: { id } });
+  const [newNote, setNewNote] = useState("");
   const [archiveCallMutation] = useArchiveCallMutation();
+  const [addNoteMutation, addNoteResult] = useAddNoteMutation();
 
   if (loading) {
     return <div>Loading</div>;
@@ -34,8 +43,21 @@ const CallPage = () => {
     return <div>Error</div>;
   }
 
+  const addNote = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (addNoteResult.loading) {
+      return;
+    }
+
+    const input = { content: newNote, activityId: id };
+
+    addNoteMutation({ variables: { input } })
+      .then(() => setNewNote(""))
+      .catch(console.error);
+  };
+
   const archiveCall = () => {
-    archiveCallMutation({ variables: { id } }).catch(console.log);
+    archiveCallMutation({ variables: { id } }).catch(console.error);
   };
 
   const number =
@@ -127,10 +149,14 @@ const CallPage = () => {
         </Typography>
       </Spacer>
 
-      <Spacer direction="vertical" width="100%" paddingX={4}>
-        <Typography variant="displayS" marginBottom={3}>
-          Notes
-        </Typography>
+      <Spacer
+        space="l"
+        direction="vertical"
+        width="100%"
+        paddingX={4}
+        paddingBottom={2}
+      >
+        <Typography variant="displayS">Notes</Typography>
 
         <Spacer space="s" direction="vertical" width="100%">
           {data.call.notes.map((note) => (
@@ -139,6 +165,20 @@ const CallPage = () => {
             </Box>
           ))}
         </Spacer>
+
+        <Form onSubmit={addNote}>
+          <Spacer direction="vertical" space={4} width="100%">
+            <TextFieldInput
+              onChange={({ target: { value } }) => setNewNote(value)}
+              value={newNote}
+              placeholder="Write something here"
+            />
+
+            <Button disabled={addNoteResult.loading} type="submit" width="100%">
+              Add Note
+            </Button>
+          </Spacer>
+        </Form>
       </Spacer>
     </Flex>
   );
