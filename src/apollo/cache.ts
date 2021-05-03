@@ -6,7 +6,7 @@ export const createCache = () =>
       Query: {
         fields: {
           paginatedCalls: {
-            keyArgs: false,
+            keyArgs: ["id"],
             merge(existing: any, incoming) {
               if (!existing) {
                 return incoming;

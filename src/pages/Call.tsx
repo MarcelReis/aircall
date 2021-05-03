@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useCallInfoQuery } from "../generated/graphql";
+import { useArchiveCallMutation, useCallInfoQuery } from "../generated/graphql";
 import { parsePhoneNumber } from "libphonenumber-js";
 import {
   Box,
@@ -8,9 +8,15 @@ import {
   Typography,
   CalendarOutlined,
   Tag,
+  ArchiveFilled,
+  ClockOutlined,
   Flex,
-  IconButton,
+  CloseOutlined,
   MenuVerticalFilled,
+  DropdownButton,
+  Dropdown,
+  MenuItem,
+  Menu,
 } from "@aircall/tractor";
 import dayjs from "dayjs";
 import CallIcon from "../components/CallIcon";
@@ -18,6 +24,7 @@ import CallIcon from "../components/CallIcon";
 const CallPage = () => {
   const { id } = useParams<{ id: string }>();
   const { loading, error, data } = useCallInfoQuery({ variables: { id } });
+  const [archiveCallMutation] = useArchiveCallMutation();
 
   if (loading) {
     return <div>Loading</div>;
@@ -27,11 +34,44 @@ const CallPage = () => {
     return <div>Error</div>;
   }
 
+  const archiveCall = () => {
+    archiveCallMutation({ variables: { id } }).catch(console.log);
+  };
+
   const number =
     data.call.direction === "inbound" ? data.call.from : data.call.to;
 
   return (
     <Flex paddingTop={8} flexDirection="column">
+      {data.call.is_archived && (
+        <Box position="absolute" top={4} left={4}>
+          <Tag size="small" variant="grey">
+            Archived
+          </Tag>
+        </Box>
+      )}
+
+      <Box position="absolute" top={4} right={4}>
+        <Dropdown
+          trigger={
+            <DropdownButton
+              mode="link"
+              variant="primary"
+              iconOpen={<CloseOutlined />}
+              iconClose={<MenuVerticalFilled />}
+            />
+          }
+          position="bottom"
+          anchor="end"
+        >
+          <Menu>
+            <MenuItem onClick={archiveCall}>
+              <ArchiveFilled /> {data.call.is_archived ? "Restore" : "Archive"}
+            </MenuItem>
+          </Menu>
+        </Dropdown>
+      </Box>
+
       <Tag variant="grey" margin="auto" marginBottom={6}>
         <CalendarOutlined size={16} />
         <Typography>
@@ -39,16 +79,13 @@ const CallPage = () => {
         </Typography>
       </Tag>
 
-      <Box position="absolute" top={4} right={4}>
-        <IconButton component={MenuVerticalFilled} size={24} />
-      </Box>
-
       <Typography variant="displayM" textAlign="center" marginBottom={4}>
         {parsePhoneNumber(number).formatInternational()}
       </Typography>
 
       <Flex
-        marginBottom={6}
+        position="relative"
+        top={2}
         size={64}
         borderRadius="50%"
         backgroundColor="grey.light"
@@ -62,6 +99,24 @@ const CallPage = () => {
           direction={data.call.direction}
         />
       </Flex>
+
+      {data.call.call_type !== "missed" ? (
+        <Box zIndex={1} margin="auto">
+          <Tag
+            size="small"
+            backgroundColor="#666"
+            color="#fff"
+            marginBottom={6}
+          >
+            <ClockOutlined size={16} />
+            <Typography>
+              {dayjs(data.call.duration).format("HH:MM:ss")}
+            </Typography>
+          </Tag>
+        </Box>
+      ) : (
+        <Box height="24px" marginBottom={6} />
+      )}
 
       <Spacer space="xs" direction="vertical" marginBottom={4}>
         <Typography textAlign="center">
@@ -79,8 +134,8 @@ const CallPage = () => {
 
         <Spacer space="s" direction="vertical" width="100%">
           {data.call.notes.map((note) => (
-            <Box padding="16px" boxShadow={1} borderRadius={4}>
-              <Typography key={note.id}>{note.content}</Typography>
+            <Box key={note.id} padding="16px" boxShadow={1} borderRadius={4}>
+              <Typography>{note.content}</Typography>
             </Box>
           ))}
         </Spacer>

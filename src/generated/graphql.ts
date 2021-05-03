@@ -109,6 +109,19 @@ export type UserType = {
   username: Scalars['String'];
 };
 
+export type ArchiveCallMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type ArchiveCallMutation = (
+  { __typename?: 'Mutation' }
+  & { archiveCall: (
+    { __typename?: 'Call' }
+    & Pick<Call, 'id' | 'is_archived'>
+  ) }
+);
+
 export type CallInfoQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -177,6 +190,40 @@ export type RefreshTokenMutation = (
 );
 
 
+export const ArchiveCallDocument = gql`
+    mutation ArchiveCall($id: ID!) {
+  archiveCall(id: $id) {
+    id
+    is_archived
+  }
+}
+    `;
+export type ArchiveCallMutationFn = Apollo.MutationFunction<ArchiveCallMutation, ArchiveCallMutationVariables>;
+
+/**
+ * __useArchiveCallMutation__
+ *
+ * To run a mutation, you first call `useArchiveCallMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useArchiveCallMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [archiveCallMutation, { data, loading, error }] = useArchiveCallMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useArchiveCallMutation(baseOptions?: Apollo.MutationHookOptions<ArchiveCallMutation, ArchiveCallMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ArchiveCallMutation, ArchiveCallMutationVariables>(ArchiveCallDocument, options);
+      }
+export type ArchiveCallMutationHookResult = ReturnType<typeof useArchiveCallMutation>;
+export type ArchiveCallMutationResult = Apollo.MutationResult<ArchiveCallMutation>;
+export type ArchiveCallMutationOptions = Apollo.BaseMutationOptions<ArchiveCallMutation, ArchiveCallMutationVariables>;
 export const CallInfoDocument = gql`
     query CallInfo($id: ID!) {
   call(id: $id) {
