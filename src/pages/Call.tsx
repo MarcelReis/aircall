@@ -174,7 +174,7 @@ const CallPage = () => {
               placeholder="Write something here"
             />
 
-            <Button disabled={addNoteResult.loading} type="submit" width="100%">
+            <Button block disabled={addNoteResult.loading} type="submit">
               Add Note
             </Button>
           </Spacer>
