@@ -25,7 +25,7 @@ const CallItem = (props: CallItemProps) => {
       width="100%"
       justifyContent="space-between"
       alignItems="center"
-      onClick={() => history.push(`/call/${props.id}`)}
+      onClick={() => history.push(`/history/${props.id}`)}
     >
       <Box padding="16px 0 16px 16px">
         <CallIcon

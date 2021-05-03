@@ -4,10 +4,10 @@ import { Box } from "@aircall/tractor";
 
 import { setLogin, useAuth } from "./apollo/auth";
 
-import HomePage from "./pages/Home";
+import HistoryPage from "./pages/History";
 import LoginPage from "./pages/Login";
 
-import Bottombar from "./components/Bottombar";
+import BottomMenu from "./components/BottomMenu";
 import CallPage from "./pages/Call";
 import { useRefreshTokenMutation } from "./generated/graphql";
 
@@ -20,12 +20,12 @@ const Routes = () => {
       return;
     }
 
-    const twoMinutes = 1000 * 60 * 2;
+    const fiveMinutes = 1000 * 60 * 5;
     const timer = setTimeout(() => {
       refreshToken({ fetchPolicy: "no-cache" }).then(({ data }) => {
         setLogin(data?.refreshToken!);
       });
-    }, twoMinutes);
+    }, fiveMinutes);
 
     return () => clearTimeout(timer);
   }, [token, refreshToken]);
@@ -43,18 +43,17 @@ const Routes = () => {
         position="relative"
       >
         <Switch>
-          <Route exact path="/">
-            <HomePage />
+          <Route exact path="/history">
+            <HistoryPage />
           </Route>
-
-          <Route exact path="/call/:id">
+          <Route exact path="/history/:id">
             <CallPage />
           </Route>
 
-          <Redirect to="" />
+          <Redirect to="/history" />
         </Switch>
       </Box>
-      <Bottombar />
+      <BottomMenu />
     </>
   );
 };

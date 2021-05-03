@@ -20,7 +20,7 @@ import {
 
 const LIMIT = 10;
 
-const HomePage = () => {
+const HistoryPage = () => {
   const [filters, setFilters] = useState<{
     type: string[];
     direction: string[];
@@ -239,4 +239,4 @@ const HomePage = () => {
     </Spacer>
   );
 };
-export default HomePage;
+export default HistoryPage;

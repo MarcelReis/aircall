@@ -1,7 +1,7 @@
 import React from "react";
 import { MockedProvider, render, screen, waitFor } from "../../test-utils";
 import { CallListDocument, CallListQuery } from "../../generated/graphql";
-import HomePage from "../Home";
+import HistoryPage from "../History";
 import { MockedResponse } from "@apollo/client/testing";
 import userEvents from "@testing-library/user-event";
 
@@ -121,11 +121,11 @@ const callListMutationMock2: MockedResponse<CallListQuery> = {
   },
 };
 
-describe("<HomePage/>", () => {
+describe("<HistoryPage/>", () => {
   it("Should render all items and paginate them", async () => {
     render(
       <MockedProvider mocks={[callListMutationMock1, callListMutationMock2]}>
-        <HomePage />
+        <HistoryPage />
       </MockedProvider>
     );
 
