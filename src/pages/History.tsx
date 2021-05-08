@@ -7,16 +7,12 @@ import {
   ArchiveFilled,
   Box,
   Button,
-  Dropdown,
   CloseOutlined,
-  DropdownButton,
   Flex,
-  Menu,
-  MenuItem,
-  PreferencesOutlined,
   Spacer,
   Typography,
 } from "@aircall/tractor";
+import HistoryFilter from "../components/HistoryFilter";
 
 const LIMIT = 10;
 
@@ -157,45 +153,7 @@ const HistoryPage = () => {
         backgroundColor="#fff"
       >
         <Box marginLeft="auto">
-          <Dropdown
-            trigger={
-              <DropdownButton
-                mode="link"
-                variant="primary"
-                iconClose={<PreferencesOutlined />}
-              >
-                Filters
-              </DropdownButton>
-            }
-            position="bottom"
-            anchor="end"
-          >
-            <Menu>
-              <MenuItem onClick={() => toggleFilter({ type: "voicemail" })}>
-                {filters.type.includes("voicemail") ? "✔ " : null}Voicemail
-              </MenuItem>
-              <MenuItem onClick={() => toggleFilter({ type: "answered" })}>
-                {filters.type.includes("answered") ? "✔ " : null}Answered
-              </MenuItem>
-              <MenuItem onClick={() => toggleFilter({ type: "missed" })}>
-                {filters.type.includes("missed") ? "✔ " : null}Missed
-              </MenuItem>
-
-              <Box
-                width="100%"
-                borderWidth={2}
-                borderStyle="solid"
-                borderColor="grey.lighter"
-              />
-
-              <MenuItem onClick={() => toggleFilter({ direction: "inbound" })}>
-                {filters.direction.includes("inbound") ? "✔ " : null}Inbound
-              </MenuItem>
-              <MenuItem onClick={() => toggleFilter({ direction: "outbound" })}>
-                {filters.direction.includes("outbound") ? "✔ " : null}Outbound
-              </MenuItem>
-            </Menu>
-          </Dropdown>
+          <HistoryFilter toggleFilter={toggleFilter} filters={filters} />
         </Box>
       </Flex>
 

@@ -82,4 +82,27 @@ describe("<LoginPage/>", function () {
     userEvents.clear(passwordInput);
     expect(loginButton).toBeDisabled();
   });
+
+  it("should display a error message when fail to login", async function () {
+    render(
+      <MockedProvider mocks={[]}>
+        <LoginPage />
+      </MockedProvider>
+    );
+
+    const usernameInput = screen.getByLabelText(/username/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const loginButton = screen.getByRole("button", {
+      name: /login/i,
+    });
+
+    userEvents.type(usernameInput, usernameMock);
+    userEvents.type(passwordInput, passwordMock);
+    userEvents.click(loginButton);
+
+    expect(screen.queryByText(/error/i)).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/error/i)).toBeInTheDocument();
+    });
+  });
 });

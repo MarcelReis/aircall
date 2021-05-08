@@ -34,11 +34,14 @@ export const useAuth = () => {
     username: string;
     password: string;
   }) => {
-    const { data } = await loginMutation({
-      variables: { input: { username, password } },
-    });
-
-    setLogin(data?.login!);
+    try {
+      const { data } = await loginMutation({
+        variables: { input: { username, password } },
+      });
+      setLogin(data?.login!);
+    } catch {
+      logout();
+    }
   };
 
   return {

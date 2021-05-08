@@ -39,6 +39,11 @@
     "format": "prettier --write src/**/*.{tsx,ts}",
     "generate": "graphql-codegen --config codegen.yml"
   },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/src/generated/"
+    ]
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
