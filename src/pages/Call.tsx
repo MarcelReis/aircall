@@ -79,6 +79,7 @@ const CallPage = () => {
             <DropdownButton
               mode="link"
               variant="primary"
+              aria-label="Call options"
               iconOpen={<CloseOutlined />}
               iconClose={<MenuVerticalFilled />}
             />
@@ -172,6 +173,7 @@ const CallPage = () => {
               onChange={({ target: { value } }) => setNewNote(value)}
               value={newNote}
               placeholder="Write something here"
+              aria-label="Note content"
             />
 
             <Button block disabled={addNoteResult.loading} type="submit">
